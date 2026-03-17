@@ -1,6 +1,7 @@
 #import "EncryptedStrings.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <objc/runtime.h>
+ #include <ctype.h>
 
 // Datos encriptados generados con Python
 static const unsigned char encrypted_sharedClient[] = { 0xD9, 0x79, 0xBD, 0xE9, 0x23, 0x69, 0x89, 0xE7, 0x3B, 0x7A, 0x88, 0xCA, 0x0B, 0xBB, 0xE4, 0x7F, 0x7C, 0xA0, 0xE0, 0x38, 0x53, 0x9C, 0xDC, 0x08 };
@@ -48,7 +49,10 @@ static NSData* decryptData(const unsigned char* data, size_t len) {
     static NSString *cached = nil; \
     static dispatch_once_t onceToken; \
     dispatch_once(&onceToken, ^{ \
-        NSData *data = decryptData(encrypted_##name, sizeof(encrypted_##name)); \
+        char lowercaseName[100]; \
+        strcpy(lowercaseName, #name); \
+        lowercaseName[0] = tolower(lowercaseName[0]); \
+        NSData *data = decryptData(encrypted_##lowercaseName, sizeof(encrypted_##lowercaseName)); \
         cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]; \
     }); \
     return cached; \

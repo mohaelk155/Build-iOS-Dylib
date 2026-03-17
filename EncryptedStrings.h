@@ -1,0 +1,21 @@
+#import <Foundation/Foundation.h>
+
+NSString* getSharedClient(void);
+NSString* getPaidExecuted(void);
+NSString* getStartInit(void);
+NSString* getSetToken(void);
+NSString* getHideUI(void);
+NSString* getStrictMode(void);
+NSString* getSilentMode(void);
+NSString* getGetPackage(void);
+NSString* getGetKey(void);
+NSString* getGetExpiry(void);
+NSString* getGetUDID(void);
+NSString* getGetDevice(void);
+NSString* getGetIP(void);
+NSString* getGetPackageName(void);
+NSString* getSwizzlePrefix(void);
+NSString* getNoSwizzle(void);
+NSString* getSwizzleComplete(void);
+NSString* getAPIClientNotFound(void);
+NSString* getDylibLoaded(void);

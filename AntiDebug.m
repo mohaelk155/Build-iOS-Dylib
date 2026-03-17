@@ -1,0 +1,71 @@
+#import "AntiDebug.h"
+#import <dlfcn.h>
+#import <sys/sysctl.h>
+#import <sys/ptrace.h>
+#import <sys/socket.h>
+#import <netinet/in.h>
+#import <arpa/inet.h>
+
+@implementation AntiDebug
+
++ (void)applyAllProtections {
+    if ([self isDebuggerAttached]) {
+        exit(1);
+    }
+    
+    [self ptraceDenyAttach];
+    [self detectFrida];
+    [self checkIntegrity];
+}
+
++ (BOOL)isDebuggerAttached {
+    int name[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+    struct kinfo_proc info;
+    size_t info_size = sizeof(info);
+    
+    if (sysctl(name, 4, &info, &info_size, NULL, 0) == -1) {
+        return NO;
+    }
+    
+    return (info.kp_proc.p_flag & P_TRACED) != 0;
+}
+
++ (void)ptraceDenyAttach {
+    void *handle = dlopen(NULL, RTLD_LOCAL);
+    if (handle) {
+        int (*ptrace_ptr)(int, pid_t, caddr_t, int) = dlsym(handle, "ptrace");
+        if (ptrace_ptr) {
+            ptrace_ptr(31, 0, 0, 0);
+        }
+        dlclose(handle);
+    }
+}
+
++ (void)detectFrida {
+    for(int port = 27042; port < 27045; port++) {
+        int sock = socket(AF_INET, SOCK_STREAM, 0);
+        struct sockaddr_in addr;
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(port);
+        inet_aton("127.0.0.1", &addr.sin_addr);
+        
+        if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+            close(sock);
+            exit(1);
+        }
+        close(sock);
+    }
+}
+
++ (void)checkIntegrity {
+    Dl_info info;
+    dladdr((const void*)checkIntegrity, &info);
+    
+    unsigned int sum = 0;
+    unsigned char *code = (unsigned char *)info.dli_fbase;
+    for(int i = 0; i < 1024; i++) {
+        sum += code[i];
+    }
+}
+
+@end

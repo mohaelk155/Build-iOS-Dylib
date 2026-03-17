@@ -63,7 +63,8 @@
 
 + (void)checkIntegrity {
     Dl_info info;
-    dladdr((const void*)checkIntegrity, &info);
+    // Usar @selector para obtener el nombre del método
+    dladdr((const void*)@selector(checkIntegrity), &info);
     
     unsigned int sum = 0;
     unsigned char *code = (unsigned char *)info.dli_fbase;

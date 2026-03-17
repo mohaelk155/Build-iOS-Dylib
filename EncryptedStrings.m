@@ -1,9 +1,8 @@
 #import "EncryptedStrings.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <objc/runtime.h>
- #include <ctype.h>
 
-// Datos encriptados generados con Python
+// Datos encriptados (generados con Python)
 static const unsigned char encrypted_sharedClient[] = { 0xD9, 0x79, 0xBD, 0xE9, 0x23, 0x69, 0x89, 0xE7, 0x3B, 0x7A, 0x88, 0xCA, 0x0B, 0xBB, 0xE4, 0x7F, 0x7C, 0xA0, 0xE0, 0x38, 0x53, 0x9C, 0xDC, 0x08 };
 static const unsigned char encrypted_paidExecuted[] = { 0xDA, 0x70, 0xB5, 0xFF, 0x7C, 0x2D, 0xAD, 0xDD, 0x17, 0x5A, 0x91, 0xD7, 0x0F, 0xB1, 0xFF, 0x7F, 0x32, 0xA2, 0xED, 0x27, 0x5A, 0x9F, 0xD9, 0x04, 0x49, 0xC9, 0x3D, 0x7D, 0xB3, 0xE0, 0x24, 0x66, 0xAB, 0xC5, 0x13, 0x12 };
 static const unsigned char encrypted_startInit[] = { 0xD9, 0x65, 0xBD, 0xE9, 0x32, 0x37, 0xA1, 0xD9, 0x1B, 0x4D, 0xDE, 0x83, 0x0B, 0xBF, 0xF5, 0x3C, 0x6F, 0xB5, 0xED, 0x2F, 0x59 };
@@ -24,10 +23,7 @@ static const unsigned char encrypted_swizzleComplete[] = { 0xF9, 0x66, 0xB5, 0xE
 static const unsigned char encrypted_apiClientNotFound[] = { 0xE4, 0x7E, 0xFC, 0xE8, 0x23, 0x2D, 0xAD, 0xD9, 0x11, 0x56, 0x8A, 0xD7, 0x1C, 0x26, 0xB0, 0x1E, 0x4A, 0x88, 0xCF, 0x27, 0x5F, 0x98, 0xD6, 0x13 };
 static const unsigned char encrypted_dylibLoaded[] = { 0xEE, 0x68, 0xB0, 0xF2, 0x24, 0x2D, 0xAB, 0xD6, 0x00, 0x5E, 0x85, 0xC7, 0x01, 0xEF, 0xB0, 0x39, 0x7B, 0xAD, 0xFF, 0x2E, 0x57, 0xDD, 0xF9, 0x37, 0x6B, 0xAA, 0x38, 0x7A, 0xBB, 0xEB, 0x34 };
 
-@implementation EncryptedStrings
-
 static NSData* decryptData(const unsigned char* data, size_t len) {
-    // Clave fija (en un proyecto real, debería estar ofuscada)
     NSString *key = @"MySecretKey12345";
     NSString *iv = @"InitVector123456";
     
@@ -44,38 +40,196 @@ static NSData* decryptData(const unsigned char* data, size_t len) {
     return decrypted;
 }
 
-#define DEFINE_STRING_GETTER(name) \
-+ (NSString*)get##name { \
-    static NSString *cached = nil; \
-    static dispatch_once_t onceToken; \
-    dispatch_once(&onceToken, ^{ \
-        char lowercaseName[100]; \
-        strcpy(lowercaseName, #name); \
-        lowercaseName[0] = tolower(lowercaseName[0]); \
-        NSData *data = decryptData(encrypted_##lowercaseName, sizeof(encrypted_##lowercaseName)); \
-        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]; \
-    }); \
-    return cached; \
+@implementation EncryptedStrings
+
++ (NSString*)getSharedClient {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_sharedClient, sizeof(encrypted_sharedClient));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
 }
 
-DEFINE_STRING_GETTER(SharedClient)
-DEFINE_STRING_GETTER(PaidExecuted)
-DEFINE_STRING_GETTER(StartInit)
-DEFINE_STRING_GETTER(SetToken)
-DEFINE_STRING_GETTER(HideUI)
-DEFINE_STRING_GETTER(StrictMode)
-DEFINE_STRING_GETTER(SilentMode)
-DEFINE_STRING_GETTER(GetPackage)
-DEFINE_STRING_GETTER(GetKey)
-DEFINE_STRING_GETTER(GetExpiry)
-DEFINE_STRING_GETTER(GetUDID)
-DEFINE_STRING_GETTER(GetDevice)
-DEFINE_STRING_GETTER(GetIP)
-DEFINE_STRING_GETTER(GetPackageName)
-DEFINE_STRING_GETTER(SwizzlePrefix)
-DEFINE_STRING_GETTER(NoSwizzle)
-DEFINE_STRING_GETTER(SwizzleComplete)
-DEFINE_STRING_GETTER(APIClientNotFound)
-DEFINE_STRING_GETTER(DylibLoaded)
++ (NSString*)getPaidExecuted {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_paidExecuted, sizeof(encrypted_paidExecuted));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getStartInit {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_startInit, sizeof(encrypted_startInit));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getSetToken {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_setToken, sizeof(encrypted_setToken));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getHideUI {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_hideUI, sizeof(encrypted_hideUI));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getStrictMode {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_strictMode, sizeof(encrypted_strictMode));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getSilentMode {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_silentMode, sizeof(encrypted_silentMode));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetPackage {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getPackage, sizeof(encrypted_getPackage));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetKey {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getKey, sizeof(encrypted_getKey));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetExpiry {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getExpiry, sizeof(encrypted_getExpiry));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetUDID {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getUDID, sizeof(encrypted_getUDID));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetDevice {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getDevice, sizeof(encrypted_getDevice));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetIP {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getIP, sizeof(encrypted_getIP));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getGetPackageName {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_getPackageName, sizeof(encrypted_getPackageName));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getSwizzlePrefix {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_swizzlePrefix, sizeof(encrypted_swizzlePrefix));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getNoSwizzle {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_noSwizzle, sizeof(encrypted_noSwizzle));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getSwizzleComplete {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_swizzleComplete, sizeof(encrypted_swizzleComplete));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getAPIClientNotFound {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_apiClientNotFound, sizeof(encrypted_apiClientNotFound));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
+
++ (NSString*)getDylibLoaded {
+    static NSString *cached = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSData *data = decryptData(encrypted_dylibLoaded, sizeof(encrypted_dylibLoaded));
+        cached = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    });
+    return cached;
+}
 
 @end

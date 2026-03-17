@@ -1,0 +1,23 @@
+name: Build iOS Dylib
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Dylib
+      run: |
+        make clean
+        make all
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libapiclient.dylib
+        path: libapiclient.dylib

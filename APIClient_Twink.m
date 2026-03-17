@@ -60,17 +60,27 @@ static dispatch_once_t onceToken;
 
 - (NSString*)getKey {
     [FIXToast show:getGetKey()];
-    return @"Invalid";
+    return getGetKey();  
 }
 
 - (NSString*)getExpiryDate {
     [FIXToast show:getGetExpiry()];
-    return @"2999-12-40";
+    return getGetExpiry();  
 }
 
 - (NSString*)getUDID {
     [FIXToast show:getGetUDID()];
-    return @"li7wak762o3";
+    return getGetUDID();  
+}
+
+- (NSString*)getLoginIP {
+    [FIXToast show:getGetIP()];
+    return getGetIP();  
+}
+
+- (NSString*)getPackageName {
+    [FIXToast show:getGetPackageName()];
+    return getGetPackageName();  
 }
 
 - (NSString*)getDeviceModel {
@@ -78,16 +88,6 @@ static dispatch_once_t onceToken;
     NSString *msg = [NSString stringWithFormat:getGetDevice(), model];
     [FIXToast show:msg];
     return model;
-}
-
-- (NSString*)getLoginIP {
-    [FIXToast show:getGetIP()];
-    return @"127.0.0.1";
-}
-
-- (NSString*)getPackageName {
-    [FIXToast show:getGetPackageName()];
-    return @"com.dts.freefireth";
 }
 
 @end

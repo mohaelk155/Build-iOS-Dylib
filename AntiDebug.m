@@ -1,10 +1,19 @@
 #import "AntiDebug.h"
 #import <dlfcn.h>
 #import <sys/sysctl.h>
-#import <sys/ptrace.h>
-#import <sys/socket.h>
 #import <netinet/in.h>
 #import <arpa/inet.h>
+#import <unistd.h>
+#import <sys/syscall.h>
+#import <objc/runtime.h>
+
+#ifndef PT_DENY_ATTACH
+#define PT_DENY_ATTACH 31
+#endif
+
+static int ptrace(int request, pid_t pid, caddr_t addr, int data) {
+    return syscall(26, request, pid, addr, data);
+}
 
 @implementation AntiDebug
 
@@ -59,12 +68,16 @@
 
 + (void)checkIntegrity {
     Dl_info info;
-    dladdr((const void*)checkIntegrity, &info);
+    IMP currentIMP = class_getMethodImplementation(objc_getMetaClass("AntiDebug"), @selector(checkIntegrity));
     
-    unsigned int sum = 0;
-    unsigned char *code = (unsigned char *)info.dli_fbase;
-    for(int i = 0; i < 1024; i++) {
-        sum += code[i];
+    if (currentIMP) {
+        dladdr((const void*)currentIMP, &info);
+        
+        unsigned int sum = 0;
+        unsigned char *code = (unsigned char *)info.dli_fbase;
+        for(int i = 0; i < 1024; i++) {
+            sum += code[i];
+        }
     }
 }
 

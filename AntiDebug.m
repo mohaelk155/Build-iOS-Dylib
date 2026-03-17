@@ -5,6 +5,7 @@
 #import <netinet/in.h>
 #import <arpa/inet.h>
 #import <unistd.h>
+#import <objc/runtime.h>
 
 #ifndef PT_DENY_ATTACH
 #define PT_DENY_ATTACH 31
@@ -63,13 +64,18 @@
 
 + (void)checkIntegrity {
     Dl_info info;
-    // Usar @selector para obtener el nombre del método
-    dladdr((const void*)@selector(checkIntegrity), &info);
     
-    unsigned int sum = 0;
-    unsigned char *code = (unsigned char *)info.dli_fbase;
-    for(int i = 0; i < 1024; i++) {
-        sum += code[i];
+    // Obtener el IMP (puntero a función) del método actual
+    IMP currentIMP = class_getMethodImplementation(self, @selector(checkIntegrity));
+    
+    if (currentIMP) {
+        dladdr((const void*)currentIMP, &info);
+        
+        unsigned int sum = 0;
+        unsigned char *code = (unsigned char *)info.dli_fbase;
+        for(int i = 0; i < 1024; i++) {
+            sum += code[i];
+        }
     }
 }
 

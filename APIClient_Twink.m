@@ -298,4 +298,4 @@ static void initialize() {
     }
     
     [FIXToast show:[NSString stringWithFormat:[EncryptedStrings getSwizzleComplete], successCount]];
-}
+}// Forzar nueva compilación - Tue Mar 17 15:20:00 CET 2026
